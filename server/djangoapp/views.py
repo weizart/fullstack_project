@@ -85,8 +85,18 @@ def registration(request):
 # ...
 
 # Create a `get_dealer_details` view to render the dealer details
-# def get_dealer_details(request, dealer_id):
-# ...
+def get_dealer_details(request, dealer_id):
+    if(dealer_id):
+        endpoint = "/fetchDealer/"+str(dealer_id)
+        dealership = get_request(endpoint)
+        if isinstance(dealership, list) and len(dealership) > 0:
+            return JsonResponse({"status":200,"dealer":dealership[0]})
+        elif isinstance(dealership, dict):
+            return JsonResponse({"status":200,"dealer":dealership})
+        else:
+            return JsonResponse({"status":404,"message":"Dealer not found"})
+    else:
+        return JsonResponse({"status":400,"message":"Bad Request"})
 
 # Create a `add_review` view to submit a review
 # def add_review(request):
@@ -110,14 +120,6 @@ def get_dealerships(request, state="All"):
         endpoint = "/fetchDealers/"+state
     dealerships = get_request(endpoint)
     return JsonResponse({"status":200,"dealers":dealerships})
-
-def get_dealer_details(request, dealer_id):
-    if(dealer_id):
-        endpoint = "/fetchDealer/"+str(dealer_id)
-        dealership = get_request(endpoint)
-        return JsonResponse({"status":200,"dealer":dealership})
-    else:
-        return JsonResponse({"status":400,"message":"Bad Request"})
 
 def get_dealer_reviews(request, dealer_id):
     # if dealer id has been provided
